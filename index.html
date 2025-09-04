@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OneClock</title>
+<title>OneClock Tahta</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
@@ -82,7 +82,7 @@ body {
   justify-content: center;
   color: #fff;
   font-family: 'Orbitron', sans-serif;
-  max-width: 400px; /* kutular sağdan barlara çarpmıyor */
+  max-width: 400px;
 }
 
 .right-panel .header {
@@ -152,7 +152,7 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:0; /* yazıyı gizle */
+  font-size:0;
   opacity:0;
   transition: all 1s ease;
 }
@@ -256,8 +256,55 @@ window.addEventListener('load', () => {
     },1000);
   },100);
 });
+
+// Hava durumu paneli
+const leftPanel = document.querySelector('.left-panel');
+const weatherPanel = document.createElement('div');
+weatherPanel.style.marginTop = '20px';
+weatherPanel.style.fontFamily = "'Orbitron', sans-serif";
+weatherPanel.style.fontSize = '24px';
+weatherPanel.style.textAlign = 'left';
+weatherPanel.style.minHeight = '28px';
+weatherPanel.id = 'weather-panel';
+leftPanel.appendChild(weatherPanel);
+
+function showDeniedMessage() {
+  weatherPanel.textContent = 'İşlem kullanıcı tarafından reddedildi, Hava durumu gösterilmeyecek';
+  weatherPanel.style.color = 'red';
+  weatherPanel.style.fontWeight = 'bold';
+  weatherPanel.style.animation = 'blinkRed 1s infinite';
+
+  const style = document.createElement('style');
+  style.innerHTML = `
+    @keyframes blinkRed {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+if ("geolocation" in navigator) {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      const apiKey = '702b4085e4480c6cc58f9c10cd2fec73';
+      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=tr&appid=${apiKey}`)
+        .then(res => res.json())
+        .then(data => {
+          weatherPanel.textContent = `${data.name}: ${data.main.temp}°C, ${data.weather[0].description}`;
+          weatherPanel.style.color = '#fff';
+          weatherPanel.style.animation = 'none';
+        })
+        .catch(() => weatherPanel.textContent = 'Hava durumu alınamadı');
+    },
+    err => showDeniedMessage()
+  );
+} else {
+  showDeniedMessage();
+}
 </script>
 
 </body>
 </html>
-
