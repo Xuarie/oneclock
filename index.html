@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OneClock</title>
+<title>OneTime</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
@@ -18,6 +18,45 @@ body {
   position: relative;
 }
 
+/* Sekme Menüsü */
+.tab-menu {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    display: flex;
+    gap: 30px;
+    z-index: 10;
+}
+
+.tab-item {
+    cursor: pointer;
+    font-size: 16px;
+    color: #888;
+    position: relative;
+    padding-top: 10px;
+    transition: color 0.3s ease;
+}
+
+.tab-item:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #555;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tab-item:hover, .tab-item.active {
+    color: #fff;
+}
+
+.tab-item:hover:before, .tab-item.active:before {
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
 /* Sol kolon - saat */
 .left-panel {
   flex: 1;
@@ -25,8 +64,9 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start; /* tekrar sola hizalandı */
+  align-items: flex-start;
   position: relative;
+  z-index: 5;
 }
 
 .time {
@@ -106,6 +146,88 @@ body {
   cursor: text;
 }
 
+/* Yeni Kayar İçerik Paneli */
+.tab-content-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 500px; /* Genişliği ayarlanabilir */
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  transform: translateX(100%); /* Başlangıçta ekran dışında */
+  transition: transform 0.5s ease-in-out;
+  z-index: 15;
+  padding: 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+.tab-content-panel.active {
+    transform: translateX(0); /* Kayarak gelsin */
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 30px;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #fff;
+}
+
+/* Panellerin içeriği */
+.panel-content {
+    display: none; /* Başlangıçta hepsi gizli */
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 40px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto; /* İçerik taşarsa kaydırma çubuğu çıksın */
+}
+
+.panel-content.active {
+    display: flex; /* Sadece aktif olan gösterilir */
+}
+
+.content-header {
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px rgba(255,255,255,0.2);
+}
+
+.kur-item, .countdown-item {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.kur-name {
+    color: #888;
+}
+
+.countdown-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.panel-message {
+    font-size: 24px;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 /* Işık animasyonları */
 .light {
   position: absolute;
@@ -119,12 +241,6 @@ body {
 @keyframes float2 {0%{transform:translate(0,100vh) scale(1) rotate(0deg);opacity:0.3}50%{transform:translateX(30px) translateY(20vh) scale(1.05) rotate(60deg);opacity:0.6}100%{transform:translate(40px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
 @keyframes float3 {0%{transform:translate(0,100vh) scale(0.9) rotate(0deg);opacity:0.3}50%{transform:translateX(-20px) translateY(25vh) scale(1) rotate(75deg);opacity:0.6}100%{transform:translate(30px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
 @keyframes float4 {0%{transform:translate(0,100vh) scale(1) rotate(0deg);opacity:0.3}50%{transform:translateX(25px) translateY(35vh) scale(0.95) rotate(90deg);opacity:0.6}100%{transform:translate(50px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
-
-/* duman izi (ince ip) */
-@keyframes smokeLine {
-  from {opacity: 0.6; transform: scaleX(1) scaleY(1); }
-  to {opacity: 0; transform: scaleX(3) scaleY(0.5); }
-}
 
 /* Açılış ekranı */
 #splash-screen {
@@ -174,12 +290,17 @@ body {
 </head>
 <body>
 
-<!-- Açılış ekranı -->
 <div id="splash-screen">
-  <div id="splash-text">OneClock</div>
+  <div id="splash-text">OneTime</div>
 </div>
 
-<!-- Sol panel -->
+<div class="tab-menu">
+    <div class="tab-item" id="tab-finans">Finans</div>
+    <div class="tab-item" id="tab-bayramlar">Bayramlar</div>
+    <div class="tab-item" id="tab-okullar">Okullar</div>
+    <div class="tab-item" id="tab-sinavlar">Sınavlar</div>
+</div>
+
 <div class="left-panel">
   <div class="time" id="time">00.00.00.000</div>
   <div class="date" id="date">Paz 01 Oca</div>
@@ -191,7 +312,6 @@ body {
   <div class="version">#GHDV6OC</div>
 </div>
 
-<!-- Sağ panel -->
 <div class="right-panel">
   <div class="header">İsim / Belirli Zaman</div>
   <div class="note-container" id="note-panel">
@@ -208,10 +328,43 @@ body {
   </div>
 </div>
 
-<!-- Powered by -->
+<div class="tab-content-panel" id="tab-content-panel">
+    <div class="close-btn" id="close-btn">×</div>
+
+    <div class="panel-content" id="finans-content">
+        <div class="content-header">Canlı Finans Verileri</div>
+        <div class="kur-item">
+            <span class="kur-name">Dolar/TL:</span>
+            <span class="kur-value" id="dolar-kur">...</span>
+        </div>
+        <div class="kur-item">
+            <span class="kur-name">Euro/TL:</span>
+            <span class="kur-value" id="euro-kur">...</span>
+        </div>
+        <div class="kur-item">
+            <span class="kur-name">Gram Altın:</span>
+            <span class="kur-value" id="altin-kur">...</span>
+        </div>
+    </div>
+
+    <div class="panel-content" id="bayramlar-content">
+        <div class="content-header">Yaklaşan Milli ve Dini Bayramlar</div>
+        <div id="all-bayramlar"></div>
+    </div>
+
+    <div class="panel-content" id="okullar-content">
+        <div class="content-header">Okul Takvimi (2025-2026)</div>
+        <div id="okullar-takvimi"></div>
+    </div>
+
+    <div class="panel-content" id="sinavlar-content">
+        <div class="content-header">Önemli Sınavlar</div>
+        <div id="sinavlar-takvimi"></div>
+    </div>
+</div>
+
 <div class="powered">Powered by OpenWeather and Github</div>
 
-<!-- Işık animasyonları -->
 <div class="light" style="width:150px;height:150px;left:20%;animation-name: float1; animation-duration: 8s;"></div>
 <div class="light" style="width:200px;height:200px;left:70%;animation-name: float2; animation-duration: 9s;"></div>
 <div class="light" style="width:100px;height:100px;left:50%;animation-name: float3; animation-duration: 7s;"></div>
@@ -222,6 +375,18 @@ const timeEl = document.getElementById('time');
 const dateEl = document.getElementById('date');
 const secBar = document.getElementById('second-bar');
 const msBar = document.getElementById('ms-bar');
+const tabItems = document.querySelectorAll('.tab-item');
+const tabContentPanel = document.getElementById('tab-content-panel');
+const closeBtn = document.getElementById('close-btn');
+
+// Yeni HTML elemanlarını seçiyoruz
+const finansContent = document.getElementById('finans-content');
+const bayramlarContent = document.getElementById('bayramlar-content');
+const okullarContent = document.getElementById('okullar-content');
+const sinavlarContent = document.getElementById('sinavlar-content');
+const allBayramlarEl = document.getElementById('all-bayramlar');
+const okullarTakvimiEl = document.getElementById('okullar-takvimi');
+const sinavlarTakvimiEl = document.getElementById('sinavlar-takvimi');
 
 function updateClock() {
   const now = new Date();
@@ -243,33 +408,140 @@ function updateClock() {
 }
 requestAnimationFrame(updateClock);
 
-// ince ip duman izi
-let lastX = null, lastY = null;
-document.addEventListener("mousemove", e => {
-  if (lastX !== null && lastY !== null) {
-    const dx = e.pageX - lastX;
-    const dy = e.pageY - lastY;
-    const length = Math.sqrt(dx*dx + dy*dy);
+// Sekme tıklama işlevselliği
+tabItems.forEach(item => {
+    item.addEventListener('click', () => {
+        // Paneli kaydırarak aç
+        tabContentPanel.classList.add('active');
+        
+        // Tüm panelleri gizle
+        finansContent.classList.remove('active');
+        bayramlarContent.classList.remove('active');
+        okullarContent.classList.remove('active');
+        sinavlarContent.classList.remove('active');
 
-    if (length > 2) {
-      const smoke = document.createElement("div");
-      smoke.style.position = "absolute";
-      smoke.style.width = length + "px";
-      smoke.style.height = "2px";
-      smoke.style.background = "rgba(200,200,200,0.4)";
-      smoke.style.left = lastX + "px";
-      smoke.style.top = lastY + "px";
-      smoke.style.transformOrigin = "left center";
-      smoke.style.transform = `translate(-50%,-50%) rotate(${Math.atan2(dy,dx)}rad)`;
-      smoke.style.pointerEvents = "none";
-      smoke.style.animation = "smokeLine 0.8s linear forwards";
-      document.body.appendChild(smoke);
-      setTimeout(()=>smoke.remove(),800);
-    }
-  }
-  lastX = e.pageX;
-  lastY = e.pageY;
+        // Tıklanan sekmeye göre ilgili içeriği göster
+        if (item.id === 'tab-finans') {
+            finansContent.classList.add('active');
+        } else if (item.id === 'tab-bayramlar') {
+            bayramlarContent.classList.add('active');
+        } else if (item.id === 'tab-okullar') {
+            okullarContent.classList.add('active');
+        } else if (item.id === 'tab-sinavlar') {
+            sinavlarContent.classList.add('active');
+        }
+    });
 });
+
+// Kapatma butonu
+closeBtn.addEventListener('click', () => {
+    tabContentPanel.classList.remove('active');
+});
+
+// --- Finansal Takip ---
+const dolarKurEl = document.getElementById('dolar-kur');
+const euroKurEl = document.getElementById('euro-kur');
+const altinKurEl = document.getElementById('altin-kur');
+
+async function fetchCurrencyData() {
+    const apiKey = '94e9912701e0092a61b35cce';
+    const url = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/TRY`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const rates = data.conversion_rates;
+
+        if (rates) {
+            const dolarTl = (1 / rates.USD).toFixed(2);
+            const euroTl = (1 / rates.EUR).toFixed(2);
+            const altinTl = (1 / rates.XAU).toFixed(2);
+
+            dolarKurEl.textContent = `${dolarTl} ₺`;
+            euroKurEl.textContent = `${euroTl} ₺`;
+            altinKurEl.textContent = `${altinTl} ₺`;
+        }
+    } catch (error) {
+        console.error('Finans verileri alınamadı:', error);
+        dolarKurEl.textContent = 'Veri Yok';
+        euroKurEl.textContent = 'Veri Yok';
+        altinKurEl.textContent = 'Veri Yok';
+    }
+}
+
+fetchCurrencyData();
+setInterval(fetchCurrencyData, 300000);
+
+// --- Takvim Verileri ---
+const bayramlar = [
+    { name: 'Yılbaşı', date: new Date('2026-01-01T00:00:00') },
+    { name: 'Ulusal Egemenlik ve Çocuk Bayramı', date: new Date('2026-04-23T00:00:00') },
+    { name: 'Emek ve Dayanışma Günü', date: new Date('2026-05-01T00:00:00') },
+    { name: 'Atatürk\'ü Anma, Gençlik ve Spor Bayramı', date: new Date('2026-05-19T00:00:00') },
+    { name: 'Demokrasi ve Milli Birlik Günü', date: new Date('2026-07-15T00:00:00') },
+    { name: 'Zafer Bayramı', date: new Date('2026-08-30T00:00:00') },
+    { name: 'Cumhuriyet Bayramı', date: new Date('2026-10-29T00:00:00') },
+    { name: 'Ramazan Bayramı', date: new Date('2026-03-30T00:00:00') },
+    { name: 'Kurban Bayramı', date: new Date('2026-06-06T00:00:00') }
+];
+
+const okullar = [
+    { name: 'Uyum Eğitimi Başlangıcı', date: new Date('2025-09-01T00:00:00') },
+    { name: 'Okullar Açılışı', date: new Date('2025-09-08T00:00:00') },
+    { name: '1. Dönem Ara Tatili', date: new Date('2025-11-10T00:00:00') },
+    { name: 'Yarıyıl Tatili', date: new Date('2026-01-19T00:00:00') },
+    { name: '2. Dönem Başlangıcı', date: new Date('2026-02-02T00:00:00') },
+    { name: '2. Dönem Ara Tatili', date: new Date('2026-03-16T00:00:00') },
+    { name: 'Okulların Kapanışı', date: new Date('2026-06-26T00:00:00') }
+];
+
+const sinavlar = [
+    { name: 'LGS', date: new Date('2026-06-01T00:00:00') }, // Tahmini Tarih
+    { name: 'YKS 1. Oturum (TYT)', date: new Date('2026-06-20T00:00:00') },
+    { name: 'YKS 2. Oturum (AYT-YDT)', date: new Date('2026-06-21T00:00:00') }
+];
+
+
+// --- Genel Geri Sayım Fonksiyonu ---
+function createCountdownList(events, containerElement) {
+    const now = new Date();
+    const upcomingEvents = events.filter(event => event.date > now);
+
+    if (upcomingEvents.length === 0) {
+        containerElement.innerHTML = '<p class="panel-message">Tüm etkinlikler geride kaldı. Gelecek yıl için bekleniyor.</p>';
+        return;
+    }
+
+    upcomingEvents.sort((a, b) => a.date - b.date);
+
+    containerElement.innerHTML = ''; // İçeriği temizle
+
+    upcomingEvents.forEach(event => {
+        const diff = event.date.getTime() - now.getTime();
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        const eventItem = document.createElement('div');
+        eventItem.classList.add('countdown-item');
+        eventItem.innerHTML = `
+            <div class="countdown-title">${event.name}</div>
+            <div class="countdown-value">${days} gün, ${hours} saat, ${minutes} dakika, ${seconds} saniye</div>
+        `;
+        containerElement.appendChild(eventItem);
+    });
+}
+
+// Geri sayım güncellemeleri
+function updateAllCountdowns() {
+    createCountdownList(bayramlar, allBayramlarEl);
+    createCountdownList(okullar, okullarTakvimiEl);
+    createCountdownList(sinavlar, sinavlarTakvimiEl);
+}
+
+updateAllCountdowns();
+setInterval(updateAllCountdowns, 1000);
 
 // açılış ekranı
 window.addEventListener('load', () => {
