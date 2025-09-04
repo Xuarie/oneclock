@@ -11,36 +11,61 @@ body {
   margin: 0;
   height: 100vh;
   display: flex;
-  background: radial-gradient(circle at 20% 20%, #000000, #000000 80%);
   font-family: 'Orbitron', sans-serif;
   overflow: hidden;
   cursor: default;
   position: relative;
+  transition: background 0.8s ease, color 0.8s ease;
 }
 
-/* Sol kolon - saat */
+/* Temalar */
+body.dark {
+  background: radial-gradient(circle at 20% 20%, #000000, #000000 80%);
+  color: #fff;
+}
+body.light {
+  background: radial-gradient(circle at 20% 20%, #ffffff, #ffffff 80%);
+  color: #000;
+}
+
+/* Glitch overlay */
+#glitch-overlay {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: black;
+  mix-blend-mode: difference;
+  pointer-events:none;
+  opacity:0;
+  z-index:9998;
+  animation:none;
+}
+
+/* Sol panel - saat */
 .left-panel {
   flex: 1;
   padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start; /* tekrar sola hizalandı */
+  align-items: flex-start;
   position: relative;
 }
 
 .time {
   font-size: 80px;
-  color: #fff;
   text-shadow: 0 0 5px rgba(255,255,255,0.3), 0 0 10px rgba(255,255,255,0.2);
 }
+body.light .time { text-shadow: 0 0 5px rgba(0,0,0,0.3), 0 0 10px rgba(0,0,0,0.2); }
 
 .date {
   font-size: 28px;
-  color: #fff;
   margin-top: 10px;
   text-shadow: 0 0 3px rgba(255,255,255,0.2);
 }
+body.light .date { text-shadow: 0 0 3px rgba(0,0,0,0.2); }
 
 .second-bar-container {
   position: relative;
@@ -51,6 +76,7 @@ body {
   overflow: hidden;
   border-radius: 3px;
 }
+body.light .second-bar-container { background: rgba(0,0,0,0.1); }
 
 .second-bar {
   height: 100%;
@@ -58,6 +84,7 @@ body {
   background-color: #fff;
   box-shadow: 0 0 8px rgba(255,255,255,0.5);
 }
+body.light .second-bar { background-color: #000; box-shadow: 0 0 8px rgba(0,0,0,0.5); }
 
 .millisecond-bar {
   position: absolute;
@@ -68,28 +95,19 @@ body {
   background-color: rgba(200,200,200,0.6);
 }
 
-.version {
-  font-size: 14px;
-  color: #888;
-  margin-top: 10px;
-}
+.version { font-size: 14px; margin-top: 10px; }
 
-/* Sağ kolon - yazı alanı */
+/* Sağ panel - notlar */
 .right-panel {
   flex: 1;
   padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  color: #fff;
-  font-family: 'Orbitron', sans-serif;
   max-width: 400px;
 }
 
-.right-panel .header {
-  font-size: 24px;
-  margin-bottom: 15px;
-}
+.right-panel .header { font-size: 24px; margin-bottom: 15px; }
 
 .right-panel .note-container {
   display: flex;
@@ -104,42 +122,43 @@ body {
   min-height: 28px;
   outline: none;
   cursor: text;
+  box-shadow: 0 0 3px rgba(255,255,255,0.2);
+  transition: box-shadow 0.3s ease;
+}
+
+body.light .right-panel .note-container div {
+  background: rgba(255,255,255,0.9);
+  color: #000;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
 /* Işık animasyonları */
-.light {
+.light-effect {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(0,0,50,0) 70%);
   animation: float linear infinite;
   opacity: 0.3;
 }
-
+body.light .light-effect {
+  background: radial-gradient(circle, rgba(0,0,0,0.15) 0%, rgba(255,255,255,0) 70%);
+}
 @keyframes float1 {0%{transform:translate(0,100vh) scale(0.8) rotate(0deg);opacity:0.3}50%{transform:translateX(-30px) translateY(30vh) scale(1.1) rotate(90deg);opacity:0.6}100%{transform:translate(50px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
 @keyframes float2 {0%{transform:translate(0,100vh) scale(1) rotate(0deg);opacity:0.3}50%{transform:translateX(30px) translateY(20vh) scale(1.05) rotate(60deg);opacity:0.6}100%{transform:translate(40px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
 @keyframes float3 {0%{transform:translate(0,100vh) scale(0.9) rotate(0deg);opacity:0.3}50%{transform:translateX(-20px) translateY(25vh) scale(1) rotate(75deg);opacity:0.6}100%{transform:translate(30px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
 @keyframes float4 {0%{transform:translate(0,100vh) scale(1) rotate(0deg);opacity:0.3}50%{transform:translateX(25px) translateY(35vh) scale(0.95) rotate(90deg);opacity:0.6}100%{transform:translate(50px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
 
-/* duman izi (ince ip) */
-@keyframes smokeLine {
-  from {opacity: 0.6; transform: scaleX(1) scaleY(1); }
-  to {opacity: 0; transform: scaleX(3) scaleY(0.5); }
-}
-
 /* Açılış ekranı */
 #splash-screen {
   position: fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:#000000;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:#000;
   display:flex;
   justify-content:center;
   align-items:center;
   z-index:9999;
 }
-
 #splash-text {
   font-family: 'Orbitron', sans-serif;
   font-size: 64px;
@@ -147,7 +166,6 @@ body {
   opacity:1;
   transition: all 1s ease;
 }
-
 .rounded {
   border-radius:50%;
   width:150px;
@@ -160,24 +178,51 @@ body {
   transition: all 1s ease;
 }
 
-/* Powered by yazısı */
+/* Açılış noktaları animasyonu */
+@keyframes blinkDots {0%,20%,50%,80%,100%{opacity:0;}10%,30%,60%,90%{opacity:1;}}
+#loading-dots { display:flex; gap:8px; }
+#loading-dots span { display:inline-block; animation: blinkDots 1.2s infinite; }
+#loading-dots span:nth-child(1) { animation-delay:0s; }
+#loading-dots span:nth-child(2) { animation-delay:0.2s; }
+#loading-dots span:nth-child(3) { animation-delay:0.4s; }
+
+/* Powered by */
 .powered {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
+  position:absolute;
+  bottom:8px; left:50%;
   transform: translateX(-50%);
-  font-size: 14px;
-  color: #888;
-  font-family: 'Orbitron', sans-serif;
+  font-size:14px; font-family:'Orbitron',sans-serif;
+  transition: color 0.8s ease;
 }
+
+/* Tema değiştirici */
+#theme-toggle {
+  position:absolute; top:8px; right:8px;
+  padding:6px 12px;
+  font-size:14px;
+  cursor:pointer;
+  border-radius:5px;
+  border:none;
+  background: rgba(255,255,255,0.1);
+  color: inherit;
+  transition: all 0.5s ease;
+}
+body.light #theme-toggle { background: rgba(0,0,0,0.1); }
 </style>
-</head>
-<body>
+<body class="dark">
+
+<div id="glitch-overlay"></div>
 
 <!-- Açılış ekranı -->
 <div id="splash-screen">
-  <div id="splash-text">OneClock</div>
+  <div style="display:flex; flex-direction:column; align-items:center;">
+    <div id="splash-text">OneClock</div>
+    <div id="loading-dots"></div>
+  </div>
 </div>
+
+<!-- Tema butonu -->
+<button id="theme-toggle">🌓</button>
 
 <!-- Sol panel -->
 <div class="left-panel">
@@ -208,14 +253,13 @@ body {
   </div>
 </div>
 
-<!-- Powered by -->
 <div class="powered">Powered by OpenWeather and Github</div>
 
 <!-- Işık animasyonları -->
-<div class="light" style="width:150px;height:150px;left:20%;animation-name: float1; animation-duration: 8s;"></div>
-<div class="light" style="width:200px;height:200px;left:70%;animation-name: float2; animation-duration: 9s;"></div>
-<div class="light" style="width:100px;height:100px;left:50%;animation-name: float3; animation-duration: 7s;"></div>
-<div class="light" style="width:120px;height:120px;left:35%;animation-name: float4; animation-duration: 8s;"></div>
+<div class="light-effect" style="width:150px;height:150px;left:20%;animation-name: float1; animation-duration: 8s;"></div>
+<div class="light-effect" style="width:200px;height:200px;left:70%;animation-name: float2; animation-duration: 9s;"></div>
+<div class="light-effect" style="width:100px;height:100px;left:50%;animation-name: float3; animation-duration: 7s;"></div>
+<div class="light-effect" style="width:120px;height:120px;left:35%;animation-name: float4; animation-duration: 8s;"></div>
 
 <script>
 const timeEl = document.getElementById('time');
@@ -229,53 +273,30 @@ function updateClock() {
   const m = String(now.getMinutes()).padStart(2,'0');
   const s = String(now.getSeconds()).padStart(2,'0');
   const ms = String(now.getMilliseconds()).padStart(3,'0');
-
   timeEl.textContent = `${h}.${m}.${s}.${ms}`;
-
   const days = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
   const months = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
   dateEl.textContent = `${days[now.getDay()]} ${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]}`;
-
   secBar.style.width = (now.getSeconds()/60)*100 + '%';
-  msBar.style.width = (now.getMilliseconds()/1000)*100 + '%';
-
   requestAnimationFrame(updateClock);
 }
 requestAnimationFrame(updateClock);
 
-// ince ip duman izi
-let lastX = null, lastY = null;
-document.addEventListener("mousemove", e => {
-  if (lastX !== null && lastY !== null) {
-    const dx = e.pageX - lastX;
-    const dy = e.pageY - lastY;
-    const length = Math.sqrt(dx*dx + dy*dy);
+// milisaniye barı rastgele ama hafif hareket
+setInterval(() => {
+  const now = new Date();
+  const ms = now.getMilliseconds();
+  const randomOffset = (Math.random()-0.5)*20;
+  let width = (ms/1000)*100 + randomOffset;
+  if(width<0) width=0;
+  if(width>100) width=100;
+  msBar.style.width = width + '%';
+},50);
 
-    if (length > 2) {
-      const smoke = document.createElement("div");
-      smoke.style.position = "absolute";
-      smoke.style.width = length + "px";
-      smoke.style.height = "2px";
-      smoke.style.background = "rgba(200,200,200,0.4)";
-      smoke.style.left = lastX + "px";
-      smoke.style.top = lastY + "px";
-      smoke.style.transformOrigin = "left center";
-      smoke.style.transform = `translate(-50%,-50%) rotate(${Math.atan2(dy,dx)}rad)`;
-      smoke.style.pointerEvents = "none";
-      smoke.style.animation = "smokeLine 0.8s linear forwards";
-      document.body.appendChild(smoke);
-      setTimeout(()=>smoke.remove(),800);
-    }
-  }
-  lastX = e.pageX;
-  lastY = e.pageY;
-});
-
-// açılış ekranı
+// Açılış animasyonu
 window.addEventListener('load', () => {
   const splashText = document.getElementById('splash-text');
   const splashScreen = document.getElementById('splash-screen');
-
   setTimeout(()=>{
     splashText.classList.add('rounded');
     setTimeout(()=>{
@@ -286,45 +307,51 @@ window.addEventListener('load', () => {
   },100);
 });
 
-// Hava durumu
-const weatherPanel = document.getElementById('weather-panel');
-function showDeniedMessage() {
-  weatherPanel.textContent = 'İşlem kullanıcı tarafından reddedildi, Hava durumu gösterilmeyecek';
-  weatherPanel.style.color = 'red';
-  weatherPanel.style.fontWeight = 'bold';
-  weatherPanel.style.animation = 'blinkRed 1s infinite';
+// Tema değiştirici ve glitch
+const themeBtn = document.getElementById('theme-toggle');
+const glitchOverlay = document.getElementById('glitch-overlay');
 
-  const style = document.createElement('style');
-  style.innerHTML = `
-    @keyframes blinkRed {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-  `;
-  document.head.appendChild(style);
-}
+function requestWeather() {
+  const weatherPanel = document.getElementById('weather-panel');
+  function showDeniedMessage() {
+    weatherPanel.textContent = 'İşlem kullanıcı tarafından reddedildi, Hava durumu gösterilmeyecek';
+    weatherPanel.style.color = 'red';
+    weatherPanel.style.fontWeight = 'bold';
+    weatherPanel.style.animation = 'blinkRed 1s infinite';
+  }
 
-if ("geolocation" in navigator) {
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      const apiKey = '702b4085e4480c6cc58f9c10cd2fec73';
-      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=tr&appid=${apiKey}`)
-        .then(res => res.json())
-        .then(data => {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        const apiKey = '702b4085e4480c6cc58f9c10cd2fec73';
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=tr&appid=${apiKey}`)
+        .then(res=>res.json())
+        .then(data=>{
           weatherPanel.textContent = `${data.name}: ${data.main.temp}°C, ${data.weather[0].description}`;
-          weatherPanel.style.color = '#fff';
-          weatherPanel.style.animation = 'none';
-        })
-        .catch(() => weatherPanel.textContent = 'Hava durumu alınamadı');
-    },
-    err => showDeniedMessage()
-  );
-} else {
-  showDeniedMessage();
+          weatherPanel.style.color = document.body.classList.contains('light')?'#000':'#fff';
+          weatherPanel.style.animation='none';
+        }).catch(()=> weatherPanel.textContent='Hava durumu alınamadı');
+      },
+      err => showDeniedMessage()
+    );
+  } else showDeniedMessage();
 }
+
+// Sayfa yüklenince ve tema değişiminde sor
+window.addEventListener('load', requestWeather);
+
+themeBtn.addEventListener('click', () => {
+  glitchOverlay.style.opacity=0.3;
+  glitchOverlay.style.animation='glitchAnim 0.3s linear';
+  setTimeout(()=>{
+    document.body.classList.toggle('light');
+    document.body.classList.toggle('dark');
+    glitchOverlay.style.opacity=0;
+    requestWeather();
+  },150);
+});
 </script>
 </body>
 </html>
-
