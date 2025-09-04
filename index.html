@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OneClock</title>
+<title>OneClock Tahta</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
@@ -11,7 +11,7 @@ body {
   margin: 0;
   height: 100vh;
   display: flex;
-  background: radial-gradient(circle at 20% 20%, #0a0a23, #000010 80%);
+  background: radial-gradient(circle at 20% 20%, #000000, #000000 80%);
   font-family: 'Orbitron', sans-serif;
   overflow: hidden;
   cursor: default;
@@ -121,9 +121,49 @@ body {
 
 /* duman izi */
 @keyframes smoke {from{opacity:0.6;transform:translate(-50%,-50%) scale(1);filter:blur(2px);}to{opacity:0;transform:translate(-50%,-50%) scale(3);filter:blur(8px);}}
+
+/* Açılış ekranı */
+#splash-screen {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:#000000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+#splash-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 64px;
+  color: #fff;
+  opacity:1;
+  transition: all 1s ease;
+}
+
+/* Yuvarlağa dönüşme animasyonu */
+.rounded {
+  border-radius:50%;
+  width:150px;
+  height:150px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:0; /* yazıyı gizle */
+  opacity:0;
+  transition: all 1s ease;
+}
 </style>
 </head>
 <body>
+
+<!-- Açılış ekranı -->
+<div id="splash-screen">
+  <div id="splash-text">OneClock</div>
+</div>
 
 <!-- Sol panel -->
 <div class="left-panel">
@@ -133,7 +173,7 @@ body {
     <div class="second-bar" id="second-bar"></div>
     <div class="millisecond-bar" id="ms-bar"></div>
   </div>
-  <div class="version">#GHDV3C</div>
+  <div class="version">#GHDV4C</div>
 </div>
 
 <!-- Sağ panel -->
@@ -200,6 +240,21 @@ document.addEventListener("mousemove", e => {
   smoke.style.animation = "smoke 1.2s linear forwards";
   document.body.appendChild(smoke);
   setTimeout(()=>smoke.remove(),1200);
+});
+
+// açılış ekranı
+window.addEventListener('load', () => {
+  const splashText = document.getElementById('splash-text');
+  const splashScreen = document.getElementById('splash-screen');
+
+  setTimeout(()=>{
+    splashText.classList.add('rounded');
+    setTimeout(()=>{
+      splashScreen.style.opacity = 0;
+      splashScreen.style.transition = 'opacity 1s ease';
+      setTimeout(()=>splashScreen.remove(),1000);
+    },1000);
+  },100);
 });
 </script>
 
