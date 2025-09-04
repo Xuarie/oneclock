@@ -5,181 +5,188 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OneClock</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
-  body {
-    margin: 0;
-    height: 100vh;
-    background: radial-gradient(circle at 20% 20%, #0a0a23, #000010 80%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    font-family: 'Orbitron', sans-serif;
-    cursor: default; /* sistemin klasik siyah imleci */
-  }
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  background: radial-gradient(circle at 20% 20%, #0a0a23, #000010 80%);
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden;
+  cursor: default;
+}
 
-  .clock-container {
-    text-align: center;
-    padding: 40px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    position: relative;
-  }
+/* Sol kolon - saat */
+.left-panel {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+}
 
-  .time {
-    font-size: 80px;
-    color: #fff;
-    text-shadow: 0 0 5px rgba(255,255,255,0.3), 0 0 10px rgba(255,255,255,0.2);
-  }
+.time {
+  font-size: 80px;
+  color: #fff;
+  text-shadow: 0 0 5px rgba(255,255,255,0.3), 0 0 10px rgba(255,255,255,0.2);
+}
 
-  .date {
-    font-size: 28px;
-    color: #fff;
-    margin-top: 15px;
-    text-shadow: 0 0 3px rgba(255,255,255,0.2);
-  }
+.date {
+  font-size: 28px;
+  color: #fff;
+  margin-top: 10px;
+  text-shadow: 0 0 3px rgba(255,255,255,0.2);
+}
 
-  .second-bar-container {
-    position: relative;
-    width: 300px;
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    margin: 20px auto 0;
-    overflow: hidden;
-  }
+.second-bar-container {
+  position: relative;
+  width: 300px;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 3px;
+}
 
-  .second-bar {
-    height: 100%;
-    width: 0%;
-    background-color: #fff;
-    box-shadow: 0 0 8px rgba(255,255,255,0.5);
-    transition: width 0.1s linear;
-  }
+.second-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #fff;
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+}
 
-  .version {
-    font-family: 'Orbitron', sans-serif;
-    color: #888;
-    font-size: 14px;
-    text-align: center;
-    margin-top: 10px;
-  }
+.millisecond-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background-color: rgba(200,200,200,0.6);
+}
 
-  .light {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(0,0,50,0) 70%);
-    animation: float linear infinite;
-    opacity: 0.3;
-  }
+.version {
+  font-size: 14px;
+  color: #888;
+  margin-top: 10px;
+}
 
-  @keyframes float1 {
-    0% { transform: translate(0,100vh) scale(0.8) rotate(0deg); opacity: 0.3; }
-    10% { opacity: 0.4; }
-    25% { transform: translateX(20px) translateY(50vh) scale(1) rotate(45deg); opacity: 0.5; }
-    50% { transform: translateX(-30px) translateY(30vh) scale(1.1) rotate(90deg); opacity: 0.6; }
-    75% { transform: translateX(10px) translateY(-20vh) scale(0.9) rotate(135deg); opacity: 0.5; }
-    100% { transform: translate(50px,-100vh) scale(1) rotate(180deg); opacity: 0.3; }
-  }
+/* Sağ kolon - yazı alanı */
+.right-panel {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  max-width: 400px; /* kutular sağdan barlara çarpmıyor */
+}
 
-  @keyframes float2 {
-    0% { transform: translate(0,100vh) scale(1) rotate(0deg); opacity: 0.3; }
-    10% { opacity: 0.4; }
-    25% { transform: translateX(-25px) translateY(45vh) scale(0.9) rotate(-30deg); opacity: 0.5; }
-    50% { transform: translateX(30px) translateY(20vh) scale(1.05) rotate(60deg); opacity: 0.6; }
-    75% { transform: translateX(-10px) translateY(-25vh) scale(1) rotate(120deg); opacity: 0.5; }
-    100% { transform: translate(40px,-100vh) scale(1) rotate(180deg); opacity: 0.3; }
-  }
+.right-panel .header {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
 
-  @keyframes float3 {
-    0% { transform: translate(0,100vh) scale(0.9) rotate(0deg); opacity: 0.3; }
-    10% { opacity: 0.4; }
-    25% { transform: translateX(15px) translateY(55vh) scale(1.05) rotate(30deg); opacity: 0.5; }
-    50% { transform: translateX(-20px) translateY(25vh) scale(1) rotate(75deg); opacity: 0.6; }
-    75% { transform: translateX(5px) translateY(-15vh) scale(0.95) rotate(135deg); opacity: 0.5; }
-    100% { transform: translate(30px,-100vh) scale(1) rotate(180deg); opacity: 0.3; }
-  }
+.right-panel .note-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-  @keyframes float4 {
-    0% { transform: translate(0,100vh) scale(1) rotate(0deg); opacity: 0.3; }
-    10% { opacity: 0.4; }
-    25% { transform: translateX(-15px) translateY(40vh) scale(1.1) rotate(-45deg); opacity: 0.5; }
-    50% { transform: translateX(25px) translateY(35vh) scale(0.95) rotate(90deg); opacity: 0.6; }
-    75% { transform: translateX(-5px) translateY(-20vh) scale(1) rotate(135deg); opacity: 0.5; }
-    100% { transform: translate(50px,-100vh) scale(1) rotate(180deg); opacity: 0.3; }
-  }
+.right-panel .note-container div {
+  background: rgba(255,255,255,0.05);
+  padding: 6px 10px;
+  border-radius: 5px;
+  min-height: 28px;
+  outline: none;
+  cursor: text;
+}
 
-  /* duman izi animasyonu */
-  @keyframes smoke {
-    from {
-      opacity: 0.6;
-      transform: translate(-50%, -50%) scale(1);
-      filter: blur(2px);
-    }
-    to {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(3);
-      filter: blur(8px);
-    }
-  }
+/* Işık animasyonları */
+.light {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(0,0,50,0) 70%);
+  animation: float linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes float1 {0%{transform:translate(0,100vh) scale(0.8) rotate(0deg);opacity:0.3}50%{transform:translateX(-30px) translateY(30vh) scale(1.1) rotate(90deg);opacity:0.6}100%{transform:translate(50px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
+@keyframes float2 {0%{transform:translate(0,100vh) scale(1) rotate(0deg);opacity:0.3}50%{transform:translateX(30px) translateY(20vh) scale(1.05) rotate(60deg);opacity:0.6}100%{transform:translate(40px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
+@keyframes float3 {0%{transform:translate(0,100vh) scale(0.9) rotate(0deg);opacity:0.3}50%{transform:translateX(-20px) translateY(25vh) scale(1) rotate(75deg);opacity:0.6}100%{transform:translate(30px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
+@keyframes float4 {0%{transform:translate(0,100vh) scale(1) rotate(0deg);opacity:0.3}50%{transform:translateX(25px) translateY(35vh) scale(0.95) rotate(90deg);opacity:0.6}100%{transform:translate(50px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
+
+/* duman izi */
+@keyframes smoke {from{opacity:0.6;transform:translate(-50%,-50%) scale(1);filter:blur(2px);}to{opacity:0;transform:translate(-50%,-50%) scale(3);filter:blur(8px);}}
 </style>
 </head>
 <body>
 
-<div class="clock-container">
-  <div class="time" id="time">00:00:00</div>
+<!-- Sol panel -->
+<div class="left-panel">
+  <div class="time" id="time">00.00.00.000</div>
   <div class="date" id="date">Paz 01 Oca</div>
-
   <div class="second-bar-container">
     <div class="second-bar" id="second-bar"></div>
+    <div class="millisecond-bar" id="ms-bar"></div>
   </div>
-
-  <div class="version">#GHDV2C</div>
+  <div class="version">#GHDV3C</div>
 </div>
 
+<!-- Sağ panel -->
+<div class="right-panel">
+  <div class="header">İsim / Belirli Zaman</div>
+  <div class="note-container" id="note-panel">
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+    <div contenteditable="true"></div>
+  </div>
+</div>
+
+<!-- Işık animasyonları -->
 <div class="light" style="width:150px;height:150px;left:20%;animation-name: float1; animation-duration: 8s;"></div>
 <div class="light" style="width:200px;height:200px;left:70%;animation-name: float2; animation-duration: 9s;"></div>
 <div class="light" style="width:100px;height:100px;left:50%;animation-name: float3; animation-duration: 7s;"></div>
 <div class="light" style="width:120px;height:120px;left:35%;animation-name: float4; animation-duration: 8s;"></div>
 
-<!-- uzay sesi -->
-<audio id="hoverSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d7cf4beff7.mp3?filename=space-ambience-110997.mp3"></audio>
-
 <script>
+const timeEl = document.getElementById('time');
+const dateEl = document.getElementById('date');
+const secBar = document.getElementById('second-bar');
+const msBar = document.getElementById('ms-bar');
+
 function updateClock() {
   const now = new Date();
-  const hours = String(now.getHours()).padStart(2,'0');
-  const minutes = String(now.getMinutes()).padStart(2,'0');
-  const seconds = now.getSeconds();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  const ms = String(now.getMilliseconds()).padStart(3,'0');
 
-  const days = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
-  const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
-  const dayName = days[now.getDay()];
-  const day = String(now.getDate()).padStart(2,'0');
-  const monthName = months[now.getMonth()];
+  timeEl.textContent = `${h}.${m}.${s}.${ms}`;
 
-  document.getElementById('time').textContent = `${hours}:${minutes}:${String(seconds).padStart(2,'0')}`;
-  document.getElementById('date').textContent = `${dayName} ${day} ${monthName}`;
+  const days = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
+  const months = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  dateEl.textContent = `${days[now.getDay()]} ${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]}`;
 
-  const bar = document.getElementById('second-bar');
-  const start = Date.now();
-  const duration = 1000;
-  function animate() {
-    const nowTime = Date.now();
-    const elapsed = nowTime - start;
-    const percent = Math.min(elapsed / duration, 1) * 100;
-    bar.style.width = percent + '%';
-    bar.style.boxShadow = `0 0 8px rgba(255,255,255,${0.5 + percent/200})`;
-    if (percent < 100) requestAnimationFrame(animate);
-  }
-  animate();
+  secBar.style.width = (now.getSeconds()/60)*100 + '%';
+  msBar.style.width = (now.getMilliseconds()/1000)*100 + '%';
+
+  requestAnimationFrame(updateClock);
 }
-setInterval(updateClock, 1000);
-updateClock();
+requestAnimationFrame(updateClock);
 
-let lastSound = 0;
+// duman izi
 document.addEventListener("mousemove", e => {
-  // duman izi
   const smoke = document.createElement("div");
   smoke.style.position = "absolute";
   smoke.style.width = "25px";
@@ -189,19 +196,10 @@ document.addEventListener("mousemove", e => {
   smoke.style.pointerEvents = "none";
   smoke.style.left = e.pageX + "px";
   smoke.style.top = e.pageY + "px";
-  smoke.style.transform = "translate(-50%, -50%)";
+  smoke.style.transform = "translate(-50%,-50%)";
   smoke.style.animation = "smoke 1.2s linear forwards";
   document.body.appendChild(smoke);
-  setTimeout(() => smoke.remove(), 1200);
-
-  // ses cooldown
-  const nowT = Date.now();
-  if (nowT - lastSound > 300) {
-    const ses = document.getElementById("hoverSound");
-    ses.currentTime = 0;
-    ses.play();
-    lastSound = nowT;
-  }
+  setTimeout(()=>smoke.remove(),1200);
 });
 </script>
 
