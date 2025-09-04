@@ -15,6 +15,7 @@ body {
   font-family: 'Orbitron', sans-serif;
   overflow: hidden;
   cursor: default;
+  position: relative;
 }
 
 /* Sol kolon - saat */
@@ -24,7 +25,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
+  align-items: flex-start; /* tekrar sola hizalandı */
   position: relative;
 }
 
@@ -119,8 +120,11 @@ body {
 @keyframes float3 {0%{transform:translate(0,100vh) scale(0.9) rotate(0deg);opacity:0.3}50%{transform:translateX(-20px) translateY(25vh) scale(1) rotate(75deg);opacity:0.6}100%{transform:translate(30px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
 @keyframes float4 {0%{transform:translate(0,100vh) scale(1) rotate(0deg);opacity:0.3}50%{transform:translateX(25px) translateY(35vh) scale(0.95) rotate(90deg);opacity:0.6}100%{transform:translate(50px,-100vh) scale(1) rotate(180deg);opacity:0.3}}
 
-/* duman izi */
-@keyframes smoke {from{opacity:0.6;transform:translate(-50%,-50%) scale(1);filter:blur(2px);}to{opacity:0;transform:translate(-50%,-50%) scale(3);filter:blur(8px);}}
+/* duman izi (ince ip) */
+@keyframes smokeLine {
+  from {opacity: 0.6; transform: scaleX(1) scaleY(1); }
+  to {opacity: 0; transform: scaleX(3) scaleY(0.5); }
+}
 
 /* Açılış ekranı */
 #splash-screen {
@@ -144,7 +148,6 @@ body {
   transition: all 1s ease;
 }
 
-/* Yuvarlağa dönüşme animasyonu */
 .rounded {
   border-radius:50%;
   width:150px;
@@ -155,6 +158,17 @@ body {
   font-size:0;
   opacity:0;
   transition: all 1s ease;
+}
+
+/* Powered by yazısı */
+.powered {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: #888;
+  font-family: 'Orbitron', sans-serif;
 }
 </style>
 </head>
@@ -173,7 +187,8 @@ body {
     <div class="second-bar" id="second-bar"></div>
     <div class="millisecond-bar" id="ms-bar"></div>
   </div>
-  <div class="version">#GHDV4C</div>
+  <div id="weather-panel" style="margin-top:20px;font-size:24px;min-height:28px;"></div>
+  <div class="version">#GHDV6OC</div>
 </div>
 
 <!-- Sağ panel -->
@@ -192,6 +207,9 @@ body {
     <div contenteditable="true"></div>
   </div>
 </div>
+
+<!-- Powered by -->
+<div class="powered">Powered by OpenWeather and Github</div>
 
 <!-- Işık animasyonları -->
 <div class="light" style="width:150px;height:150px;left:20%;animation-name: float1; animation-duration: 8s;"></div>
@@ -225,21 +243,32 @@ function updateClock() {
 }
 requestAnimationFrame(updateClock);
 
-// duman izi
+// ince ip duman izi
+let lastX = null, lastY = null;
 document.addEventListener("mousemove", e => {
-  const smoke = document.createElement("div");
-  smoke.style.position = "absolute";
-  smoke.style.width = "25px";
-  smoke.style.height = "25px";
-  smoke.style.borderRadius = "50%";
-  smoke.style.background = "rgba(200,200,200,0.4)";
-  smoke.style.pointerEvents = "none";
-  smoke.style.left = e.pageX + "px";
-  smoke.style.top = e.pageY + "px";
-  smoke.style.transform = "translate(-50%,-50%)";
-  smoke.style.animation = "smoke 1.2s linear forwards";
-  document.body.appendChild(smoke);
-  setTimeout(()=>smoke.remove(),1200);
+  if (lastX !== null && lastY !== null) {
+    const dx = e.pageX - lastX;
+    const dy = e.pageY - lastY;
+    const length = Math.sqrt(dx*dx + dy*dy);
+
+    if (length > 2) {
+      const smoke = document.createElement("div");
+      smoke.style.position = "absolute";
+      smoke.style.width = length + "px";
+      smoke.style.height = "2px";
+      smoke.style.background = "rgba(200,200,200,0.4)";
+      smoke.style.left = lastX + "px";
+      smoke.style.top = lastY + "px";
+      smoke.style.transformOrigin = "left center";
+      smoke.style.transform = `translate(-50%,-50%) rotate(${Math.atan2(dy,dx)}rad)`;
+      smoke.style.pointerEvents = "none";
+      smoke.style.animation = "smokeLine 0.8s linear forwards";
+      document.body.appendChild(smoke);
+      setTimeout(()=>smoke.remove(),800);
+    }
+  }
+  lastX = e.pageX;
+  lastY = e.pageY;
 });
 
 // açılış ekranı
@@ -257,17 +286,8 @@ window.addEventListener('load', () => {
   },100);
 });
 
-// Hava durumu paneli
-const leftPanel = document.querySelector('.left-panel');
-const weatherPanel = document.createElement('div');
-weatherPanel.style.marginTop = '20px';
-weatherPanel.style.fontFamily = "'Orbitron', sans-serif";
-weatherPanel.style.fontSize = '24px';
-weatherPanel.style.textAlign = 'left';
-weatherPanel.style.minHeight = '28px';
-weatherPanel.id = 'weather-panel';
-leftPanel.appendChild(weatherPanel);
-
+// Hava durumu
+const weatherPanel = document.getElementById('weather-panel');
 function showDeniedMessage() {
   weatherPanel.textContent = 'İşlem kullanıcı tarafından reddedildi, Hava durumu gösterilmeyecek';
   weatherPanel.style.color = 'red';
@@ -305,6 +325,5 @@ if ("geolocation" in navigator) {
   showDeniedMessage();
 }
 </script>
-
 </body>
 </html>
