@@ -16,6 +16,7 @@
     align-items: center;
     overflow: hidden;
     font-family: 'Orbitron', sans-serif;
+    cursor: default; /* sistemin klasik siyah imleci */
   }
 
   .clock-container {
@@ -39,7 +40,6 @@
     text-shadow: 0 0 3px rgba(255,255,255,0.2);
   }
 
-  /* Keskin kare saniye çubuğu */
   .second-bar-container {
     position: relative;
     width: 300px;
@@ -57,7 +57,6 @@
     transition: width 0.1s linear;
   }
 
-  /* Sürüm etiketi */
   .version {
     font-family: 'Orbitron', sans-serif;
     color: #888;
@@ -71,7 +70,7 @@
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(0,0,50,0) 70%);
     animation: float linear infinite;
-    opacity: 0.3; /* siteye girer girmez görünür */
+    opacity: 0.3;
   }
 
   @keyframes float1 {
@@ -109,6 +108,20 @@
     75% { transform: translateX(-5px) translateY(-20vh) scale(1) rotate(135deg); opacity: 0.5; }
     100% { transform: translate(50px,-100vh) scale(1) rotate(180deg); opacity: 0.3; }
   }
+
+  /* duman izi animasyonu */
+  @keyframes smoke {
+    from {
+      opacity: 0.6;
+      transform: translate(-50%, -50%) scale(1);
+      filter: blur(2px);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(3);
+      filter: blur(8px);
+    }
+  }
 </style>
 </head>
 <body>
@@ -117,20 +130,20 @@
   <div class="time" id="time">00:00:00</div>
   <div class="date" id="date">Paz 01 Oca</div>
 
-  <!-- Keskin kare saniye çubuğu -->
   <div class="second-bar-container">
     <div class="second-bar" id="second-bar"></div>
   </div>
 
-  <!-- Sürüm etiketi -->
-  <div class="version">#GHDV1C</div>
+  <div class="version">#GHDV2C</div>
 </div>
 
-<!-- Arka plan topları -->
 <div class="light" style="width:150px;height:150px;left:20%;animation-name: float1; animation-duration: 8s;"></div>
 <div class="light" style="width:200px;height:200px;left:70%;animation-name: float2; animation-duration: 9s;"></div>
 <div class="light" style="width:100px;height:100px;left:50%;animation-name: float3; animation-duration: 7s;"></div>
 <div class="light" style="width:120px;height:120px;left:35%;animation-name: float4; animation-duration: 8s;"></div>
+
+<!-- uzay sesi -->
+<audio id="hoverSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d7cf4beff7.mp3?filename=space-ambience-110997.mp3"></audio>
 
 <script>
 function updateClock() {
@@ -148,10 +161,9 @@ function updateClock() {
   document.getElementById('time').textContent = `${hours}:${minutes}:${String(seconds).padStart(2,'0')}`;
   document.getElementById('date').textContent = `${dayName} ${day} ${monthName}`;
 
-  // Her saniye baştan sona dolacak bar
   const bar = document.getElementById('second-bar');
   const start = Date.now();
-  const duration = 1000; // 1 saniye
+  const duration = 1000;
   function animate() {
     const nowTime = Date.now();
     const elapsed = nowTime - start;
@@ -162,11 +174,36 @@ function updateClock() {
   }
   animate();
 }
-
 setInterval(updateClock, 1000);
 updateClock();
+
+let lastSound = 0;
+document.addEventListener("mousemove", e => {
+  // duman izi
+  const smoke = document.createElement("div");
+  smoke.style.position = "absolute";
+  smoke.style.width = "25px";
+  smoke.style.height = "25px";
+  smoke.style.borderRadius = "50%";
+  smoke.style.background = "rgba(200,200,200,0.4)";
+  smoke.style.pointerEvents = "none";
+  smoke.style.left = e.pageX + "px";
+  smoke.style.top = e.pageY + "px";
+  smoke.style.transform = "translate(-50%, -50%)";
+  smoke.style.animation = "smoke 1.2s linear forwards";
+  document.body.appendChild(smoke);
+  setTimeout(() => smoke.remove(), 1200);
+
+  // ses cooldown
+  const nowT = Date.now();
+  if (nowT - lastSound > 300) {
+    const ses = document.getElementById("hoverSound");
+    ses.currentTime = 0;
+    ses.play();
+    lastSound = nowT;
+  }
+});
 </script>
 
 </body>
 </html>
-
