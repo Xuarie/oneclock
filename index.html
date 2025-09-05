@@ -26,6 +26,7 @@ body {
     display: flex;
     gap: 30px;
     z-index: 10;
+    align-items: center; /* Logoyu ortalamak için eklendi */
 }
 
 .tab-item {
@@ -57,6 +58,24 @@ body {
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
+/* Logo Stili */
+.logo {
+    height: 60px; /* Bu değeri artırarak logoyu büyütebilirsiniz */
+    margin-left: 20px; /* Sekmelerden biraz boşluk bırakır */
+    transition: transform 0.3s ease;
+}
+
+/* Sekme Menüsü */
+.tab-menu {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    display: flex;
+    gap: 30px;
+    z-index: 10;
+    align-items: center; /* Bu ayar sekmelerle logoyu dikeyde ortalar */
+}
+
 /* Sol kolon - saat */
 .left-panel {
     flex: 1;
@@ -84,6 +103,7 @@ body {
     text-shadow: 0 0 3px rgba(255, 255, 255, 0.2);
 }
 
+/* Bar konteynerleri */
 .second-bar-container {
     position: relative;
     width: 300px;
@@ -314,6 +334,18 @@ body {
     }
 }
 
+/* Sekmeler için yeni parlama animasyonu - Artık sadece renk ve hareket içeriyor */
+@keyframes tab-glow {
+    0%, 100% {
+        color: #888;
+        transform: translateY(0);
+    }
+    50% {
+        color: #fff;
+        transform: translateY(5px);
+    }
+}
+
 /* Açılış ekranı */
 #splash-screen {
     position: fixed;
@@ -358,6 +390,25 @@ body {
     color: #888;
     font-family: 'Orbitron', sans-serif;
 }
+
+/* Yılın parlaması için yeni stil */
+.glowing-year {
+    color: #FFFF00; /* Sarı renk */
+    text-shadow: 0 0 5px rgba(255, 255, 0, 0.5), 0 0 10px rgba(255, 255, 0, 0.3);
+    animation: yellow-glow 2s infinite alternate;
+}
+
+@keyframes yellow-glow {
+    from {
+        text-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
+        color: #FFFF00;
+    }
+    to {
+        text-shadow: 0 0 15px rgba(255, 255, 0, 1), 0 0 20px rgba(255, 255, 0, 0.8), 0 0 25px rgba(255, 255, 0, 0.6);
+        color: #FFD700;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -371,11 +422,12 @@ body {
     <div class="tab-item" id="tab-bayramlar">Bayramlar</div>
     <div class="tab-item" id="tab-okullar">Okullar</div>
     <div class="tab-item" id="tab-sinavlar">Sınavlar</div>
+    <img src="https://github.com/Xuarie/oneclockreso/blob/main/Vyren%20Connects.png?raw=true" alt="Logo" class="logo">
 </div>
 
 <div class="left-panel">
     <div class="time" id="time">00.00.00.000</div>
-    <div class="date" id="date">Paz 01 Oca</div>
+    <div class="date" id="date">01 Oca 2025</div>
     <div class="second-bar-container">
         <div class="second-bar" id="second-bar"></div>
         <div class="millisecond-bar" id="ms-bar"></div>
@@ -385,7 +437,7 @@ body {
         <button id="pause-ms-btn" class="pause-btn">Salise Durdur</button>
     </div>
     <div id="weather-panel" style="margin-top:20px;font-size:24px;min-height:28px;"></div>
-    <div class="version">WX10OC</div>
+    <div class="version">OneTime Sürüm:X10OT</div>
 </div>
 
 <div class="right-panel">
@@ -497,9 +549,16 @@ function updateClock() {
 
     timeEl.innerHTML = `${h}.${m}.${s}.${ms}`;
 
-    const days = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
-    const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
-    dateEl.textContent = `${days[now.getDay()]} ${String(now.getDate()).padStart(2, '0')} ${months[now.getMonth()]}`;
+    // Tarih formatını güncelledik
+    const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+    const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+
+    const dayName = days[now.getDay()];
+    const day = String(now.getDate()).padStart(2, '0');
+    const monthName = months[now.getMonth()];
+    const year = now.getFullYear();
+
+    dateEl.innerHTML = `${dayName}, ${day} ${monthName} <span class="glowing-year">${year}</span>`;
 
     if (!isSecondsPaused) {
         secBar.style.width = (now.getSeconds() / 60) * 100 + '%';
@@ -572,7 +631,7 @@ const euroKurEl = document.getElementById('euro-kur');
 const altinKurEl = document.getElementById('altin-kur');
 
 async function fetchCurrencyData() {
-    const apiKey = '94e9912701e0092a61b35cce';
+    const apiKey = '94e9912701e0092a61b35cce'; 
     const url = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/TRY`;
 
     try {
@@ -670,6 +729,26 @@ function updateAllCountdowns() {
 updateAllCountdowns();
 setInterval(updateAllCountdowns, 1000);
 
+// Sekme animasyonlarını sırayla başlatma
+function startTabAnimations() {
+    const tabs = document.querySelectorAll('.tab-item');
+    let tabIndex = 0;
+
+    setInterval(() => {
+        // Tüm sekmelerden animasyonu kaldır
+        tabs.forEach(tab => {
+            tab.style.animation = 'none';
+        });
+
+        // Şu anki sekmeye animasyonu ekle
+        tabs[tabIndex].style.animation = 'tab-glow 1s ease-in-out forwards';
+        
+        // Bir sonraki sekmeye geç
+        tabIndex = (tabIndex + 1) % tabs.length;
+    }, 1000); // Her 1 saniyede bir animasyon değiştir
+}
+
+
 // açılış ekranı
 window.addEventListener('load', () => {
     const splashText = document.getElementById('splash-text');
@@ -683,6 +762,9 @@ window.addEventListener('load', () => {
             setTimeout(() => splashScreen.remove(), 1000);
         }, 1000);
     }, 100);
+
+    // Açılış ekranı bittikten sonra animasyonları başlat
+    startTabAnimations();
 });
 
 // Hava durumu
@@ -718,4 +800,3 @@ if ("geolocation" in navigator) {
 </script>
 </body>
 </html>
-
